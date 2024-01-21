@@ -130,7 +130,18 @@ def bbox2result(bboxes, labels, num_classes):
         if isinstance(bboxes, torch.Tensor):
             bboxes = bboxes.detach().cpu().numpy()
             labels = labels.detach().cpu().numpy()
+        print("before in _get_bboxes_single", "batch_det_bboxes =", bboxes.shape, "batch_labels =", labels.shape)
+        print("bbboxes shape " , bboxes.shape)
+        print("labels shape " , labels.shape)
+
+        # Reshape bboxes
+        bboxes = bboxes.reshape(labels.shape[0], -1)[:, :5]
+
+        print("bbboxes shape " , bboxes.shape)
+        print("labels shape " , labels.shape)
+
         return [bboxes[labels == i, :] for i in range(num_classes)]
+    
 
 
 def distance2bbox(points, distance, max_shape=None):

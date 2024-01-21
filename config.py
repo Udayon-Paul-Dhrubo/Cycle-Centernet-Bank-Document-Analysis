@@ -1,3 +1,6 @@
+import torch
+
+
 TEST_NAME = "32_quad_long_retry"
 EVAL_LAG = 150
 CHECKPOINT_LAG = 1
@@ -43,14 +46,14 @@ data = dict(
             ),
             dict(
                 type="RandomCenterCropPad",
-                crop_size=(1024, 1024),
+                crop_size=(512, 512),
                 ratios=(0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3),
                 mean=[0, 0, 0],
                 std=[1, 1, 1],
                 to_rgb=True,
                 test_pad_mode=None,
             ),
-            dict(type="Resize", img_scale=(1024, 1024), keep_ratio=True),
+            dict(type="Resize", img_scale=(512, 512), keep_ratio=True),
             dict(type="RandomFlip", flip_ratio=0.5),
             dict(
                 type="Normalize",
@@ -80,14 +83,14 @@ data = dict(
             ),
             dict(
                 type="RandomCenterCropPad",
-                crop_size=(1024, 1024),
+                crop_size=(512, 512),
                 ratios=(0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3),
                 mean=[0, 0, 0],
                 std=[1, 1, 1],
                 to_rgb=True,
                 test_pad_mode=None,
             ),
-            dict(type="Resize", img_scale=(1024, 1024), keep_ratio=True),
+            dict(type="Resize", img_scale=(512, 512), keep_ratio=True),
             dict(type="RandomFlip", flip_ratio=0.5),
             dict(
                 type="Normalize",
@@ -212,7 +215,7 @@ data = dict(
 
 # MODEL CycleCenterNet(dcnv2) DLANetMMDet3D,
 load_from = None
-resume_from = "/media/quadro/NVME/Mehrab/centernet/exps/32_quad_long/epoch_85.pth"
+resume_from = "/media/quadro/NVME/Mehrab/exps/32_quad_long_retry/epoch_64.pth"
 
 model = dict(
     type="CenterNet",
@@ -252,7 +255,7 @@ model = dict(
 
 
 # GPU
-gpu_ids = [5]
+gpu_ids = [2]
 device = "cuda"
 
 
@@ -283,7 +286,7 @@ auto_scale_lr = dict(enable=False, base_batch_size=16)
 
 
 # LOGGING
-work_dir = f"/media/quadro/NVME/Mehrab/centernet/exps/{TEST_NAME}"
+work_dir = f"/media/quadro/NVME/Mehrab/exps/{TEST_NAME}"
 INTERVAL = int(10976 / (ITER_PERIOD * BATCH)) + (10976 % (ITER_PERIOD * BATCH) > 0)
 log_config = dict(
     interval=INTERVAL,
@@ -294,9 +297,9 @@ log_config = dict(
             type="MMDetWandbHook",
             init_kwargs={
                 "project": "CenterNet",
-                "entity": "centernet",
+                "entity": "thesis_bank_document",
                 "name": TEST_NAME,
-                "dir": "/media/quadro/NVME/Mehrab/centernet/exps/wandb",
+                "dir": "/media/quadro/NVME/Mehrab/exps/wandb",
                 "tags": TAGS,
             },
             interval=INTERVAL,
@@ -316,6 +319,7 @@ checkpoint_config = dict(interval=CHECKPOINT_LAG, max_keep_ckpts=1)
 
 # RUNTIME
 seed = 0
+
 
 custom_hooks = [dict(type="NumClassCheckHook")]
 dist_params = dict(backend="nccl")

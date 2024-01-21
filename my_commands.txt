@@ -1,0 +1,3 @@
+pythom train.py 2
+
+nvidia-smi --query-gpu=index,utilization.gpu --format=csv | grep ", 0 %"
