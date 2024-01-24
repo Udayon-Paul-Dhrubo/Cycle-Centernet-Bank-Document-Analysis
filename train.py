@@ -29,6 +29,7 @@ set_random_seed(0, deterministic=False)
     
 val = True
 # Build dataset
+
 if len(argv) == 2:
     datasets = [build_dataset(cfg.data.train), build_dataset(cfg.data.val_loss)]
 elif argv[2] == "no-val":

@@ -1,13 +1,15 @@
 import torch
 
 
-TEST_NAME = "32_quad_long_retry"
+TEST_NAME = "32_quad_long_retry_multigpu"
 EVAL_LAG = 150
 CHECKPOINT_LAG = 1
 EPOCHS = 150
-LR = 0.00125
+
 BACKBONE = "DLANetMMDet3D"
-BATCH = 8
+NUM_GPUS = 2
+BATCH = 8 * NUM_GPUS
+LR = 0.00125 * NUM_GPUS
 local_maximum_kernel = 1
 ITER_PERIOD = 2
 TAGS = [
@@ -20,6 +22,9 @@ TAGS = [
     f"{BACKBONE}_backbone",
     f"{BATCH}_batch",
 ]
+
+
+
 # DATA AND AUG
 dataset_type = "CocoDataset"
 data_root = "/media/quadro/NVME/Mehrab/datasets/"
@@ -28,7 +33,7 @@ img_norm_cfg = dict(mean=[103.53, 116.28, 123.675], std=[1.0, 1.0, 1.0], to_rgb=
 
 data = dict(
     # train_dataloader=dict(shuffle=),
-    samples_per_gpu=BATCH,
+    samples_per_gpu=BATCH // NUM_GPUS,
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
@@ -215,7 +220,7 @@ data = dict(
 
 # MODEL CycleCenterNet(dcnv2) DLANetMMDet3D,
 load_from = None
-resume_from = "/media/quadro/NVME/Mehrab/exps/32_quad_long_retry/epoch_64.pth"
+resume_from = None
 
 model = dict(
     type="CenterNet",
@@ -255,7 +260,7 @@ model = dict(
 
 
 # GPU
-gpu_ids = [2]
+gpu_ids = [2,3]
 device = "cuda"
 
 
@@ -282,7 +287,7 @@ lr_config = dict(
 # NOTE: `auto_scale_lr` is for automatically scaling LR,
 # USER SHOULD NOT CHANGE ITS VALUES.
 # base_batch_size = (8 GPUs) x (16 samples per GPU)
-auto_scale_lr = dict(enable=False, base_batch_size=16)
+auto_scale_lr = dict(enable=True, base_batch_size=16)
 
 
 # LOGGING

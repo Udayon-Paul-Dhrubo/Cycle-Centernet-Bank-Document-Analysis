@@ -269,6 +269,8 @@ class CycleCenterNetHead(BaseDenseHead, BBoxTestMixin):
                - vertex2center_target (Tensor): targets of vertex2center predict, shape \
                    (B, 8, H, W).
         """
+        
+
         img_h, img_w = img_shape[:2]
         bs, _, feat_h, feat_w = feat_shape
 
@@ -410,6 +412,9 @@ class CycleCenterNetHead(BaseDenseHead, BBoxTestMixin):
             vertex2center_target=v2c_target,
             pairing_weight=pairing_weight,
         )
+
+        
+
         return target_result, avg_factor
 
     @force_fp32(

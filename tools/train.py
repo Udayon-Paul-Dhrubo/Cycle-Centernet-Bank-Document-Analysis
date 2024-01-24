@@ -104,8 +104,10 @@ def parse_args():
 
     return args
 
-
+import wandb
 def main():
+    wandb.login()
+
     args = parse_args()
 
     cfg = Config.fromfile(args.config)
@@ -216,11 +218,13 @@ def main():
     model.init_weights()
 
     datasets = [build_dataset(cfg.data.train)]
+
+
     if len(cfg.workflow) == 2:
         assert 'val' in [mode for (mode, _) in cfg.workflow]
         val_dataset = copy.deepcopy(cfg.data.val)
         val_dataset.pipeline = cfg.data.train.get(
-            'pipeline', cfg.data.train.dataset.get('pipeline'))
+            'pipeline', cfg.data.train.get('pipeline'))
         datasets.append(build_dataset(val_dataset))
     if cfg.checkpoint_config is not None:
         # save mmdet version, config file content and class names in
@@ -228,6 +232,8 @@ def main():
         cfg.checkpoint_config.meta = dict(
             mmdet_version=__version__ + get_git_hash()[:7],
             CLASSES=datasets[0].CLASSES)
+        
+    
     # add an attribute for visualization convenience
     model.CLASSES = datasets[0].CLASSES
     train_detector(

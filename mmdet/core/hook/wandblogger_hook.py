@@ -16,6 +16,7 @@ from mmcv.utils import digit_version
 from mmdet.core import DistEvalHook, EvalHook
 from mmdet.core.mask.structures import polygon_to_bitmap
 
+import json
 
 @HOOKS.register_module()
 class MMDetWandbHook(WandbLoggerHook):
@@ -279,6 +280,17 @@ class MMDetWandbHook(WandbLoggerHook):
     def after_run(self, runner):
         self.wandb.finish()
 
+
+
+    @staticmethod
+    def is_json_serializable(value):
+        """Check if the value is JSON serializable."""
+        try:
+            json.dumps(value)
+            return True
+        except TypeError:
+            return False
+
     def _update_wandb_config(self, runner):
         """Update wandb config."""
         # Import the config file.
@@ -288,8 +300,25 @@ class MMDetWandbHook(WandbLoggerHook):
         # Prepare a nested dict of config variables.
         config_keys = [key for key in dir(configs) if not key.startswith('__')]
         config_dict = {key: getattr(configs, key) for key in config_keys}
+
+
+         # Serialize the config dictionary
+        serialized_config = self.serialize_config(config_dict)
+
         # Update the W&B config.
-        self.wandb.config.update(config_dict)
+        self.wandb.config.update(serialized_config)
+
+
+    def serialize_config(self, config):
+        """Serialize configuration to ensure all elements are JSON serializable."""
+        serialized_config = {}
+        for key, value in config.items():
+            if self.is_json_serializable(value):
+                serialized_config[key] = value
+            else:
+                # Transform or exclude non-serializable values here
+                serialized_config[key] = str(value)  # As an example, convert to string
+        return serialized_config
 
     def _log_ckpt_as_artifact(self, model_path, aliases, metadata=None):
         """Log model checkpoint as  W&B Artifact.

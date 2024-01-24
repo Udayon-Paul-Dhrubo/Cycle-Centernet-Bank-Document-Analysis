@@ -158,7 +158,7 @@ def train_detector(model,
             cfg.device,
             device_ids=[int(os.environ['LOCAL_RANK'])],
             broadcast_buffers=False,
-            find_unused_parameters=find_unused_parameters)
+            find_unused_parameters=True)
     else:
         model = build_dp(model, cfg.device, device_ids=cfg.gpu_ids)
 
