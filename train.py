@@ -14,27 +14,16 @@ import subprocess
 import random
 
 
-
-
-
-
 wandb.login()
-cfg = Config.fromfile(f"/media/quadro/NVME/Mehrab/Current_Experiment/config.py")
-
+cfg = Config.fromfile(f"/media/quadro/NVME/Mehrab/Current_Experiment/finetune_config.py")
 
 set_random_seed(0, deterministic=False)
 
+  
 
-
-    
-val = True
-# Build dataset
-if len(argv) == 2:
-    datasets = [build_dataset(cfg.data.train), build_dataset(cfg.data.val_loss)]
-elif argv[2] == "no-val":
-    datasets = [build_dataset(cfg.data.train)]
-    cfg.workflow = [("train", 1)]
-    val = False
+datasets = [build_dataset(cfg.data.train)]
+cfg.workflow = [("train", 1)]
+val = False
 
 # Build the detector
 model = build_detector(cfg.model)
