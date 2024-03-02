@@ -19,7 +19,7 @@ import random
 
 
 wandb.login()
-cfg = Config.fromfile(f"/media/quadro/NVME/Mehrab/Current_Experiment/config.py")
+cfg = Config.fromfile(f"/media/quadro/NVME/Mehrab/Current_Experiment/row_column_finetune_config.py")
 
 
 set_random_seed(0, deterministic=False)
